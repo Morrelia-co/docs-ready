@@ -23,7 +23,8 @@ function setMeta(title, description) {
 
 async function scrollToHash() {
   await nextTick()
-  const id = decodeURIComponent(route.hash.slice(1))
+  let id = route.hash.slice(1)
+  try { id = decodeURIComponent(id) } catch { /* malformed escape such as #%E0%A4%A: use the raw value */ }
   if (id) document.getElementById(id)?.scrollIntoView()
 }
 

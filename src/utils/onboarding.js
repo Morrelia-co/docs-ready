@@ -298,7 +298,16 @@ export const plannedPaths = (f) => generateFiles(f).map((x) => x.path)
 const SKIP = (p) => p.startsWith('src/content/') || p === 'README.md' || p === 'public/images/sample-architecture.svg' || p.startsWith('tests/')
 
 /** Complete project: portal source + generated files. `ctx.source` is { path: text } (see the virtual:project-source module). */
+const EXT_OK = /^(png|jpg|webp|svg|ico|woff2|woff|ttf|otf)$/
+/** The wizard validates as you go, but the generator must not trust that: re-check everything before writing any file. */
+function assertSafe(f) {
+  for (let s = 0; s < STEP_COUNT - 1; s++) { const key = Object.values(validate(s, f))[0]; if (key) throw new Error(`Invalid configuration (step ${s + 1}): ${key}`) }
+  const exts = [f.branding.logo?.ext, f.branding.favicon?.ext, ...f.fonts.files.map((x) => x.ext)].filter(Boolean)
+  if (exts.some((x) => !EXT_OK.test(x))) throw new Error('Invalid file extension in uploads')
+}
+
 export function buildFiles(f, ctx = {}) {
+  assertSafe(f)
   const generated = generateFiles(f, ctx)
   const slug = slugify(clean(f.name))
   const out = new Map()

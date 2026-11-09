@@ -23,7 +23,7 @@ export default {
   },
 
   // Paths are relative to public/ (for example 'brand/logo.svg'). null keeps the built-in mark and favicon.
-  branding: { logo: null, favicon: null, showTitle: true },
+  branding: { logo: '512x512.png', favicon: null, showTitle: true },
 
   features: { onboarding: true, about: true }, // onboarding: the /onboarding wizard; about: the About & license page
 

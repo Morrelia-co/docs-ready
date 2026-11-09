@@ -3,8 +3,10 @@ import { useRoute } from 'vue-router'
 import { docs, sections, loaders, languages, defaultLanguage, siteInfo, site } from 'virtual:docs-manifest'
 import { t as translate } from '../i18n/ui.js'
 
-const bySlug = Object.fromEntries(docs.map((d) => [d.slug, d]))
-const byLangPath = Object.fromEntries(docs.map((d) => [`${d.lang}|${d.pagePath}`, d]))
+// Null-prototype maps: a URL such as /constructor or /__proto__ must be "not found", not an inherited Object property.
+const dict = (pairs) => Object.assign(Object.create(null), Object.fromEntries(pairs))
+const bySlug = dict(docs.map((d) => [d.slug, d]))
+const byLangPath = dict(docs.map((d) => [`${d.lang}|${d.pagePath}`, d]))
 const codes = languages.map((l) => l.code)
 
 // Default-language URLs have no prefix; other languages start with their code.

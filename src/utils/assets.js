@@ -37,7 +37,15 @@ export function sniff(bytes) {
   return null
 }
 
-const UNSAFE_SVG = /<script|\son\w+\s*=|javascript:|<foreignobject|<!entity/i
+// Denylist of active or external content. An SVG shown through <img> cannot run script, but a file opened directly (or served by a
+// host without a CSP) can, so anything that could execute or load a remote resource is rejected: scripts, event handlers
+// (including "<svg/onload=...>"), SMIL animation, foreign objects, entity tricks, stylesheet imports, and any href that is not a
+// same-document "#fragment" (so embedded or remote images are rejected too).
+const UNSAFE_SVG = new RegExp([
+  '<script', '<foreignobject', '<iframe', '<embed', '<object', '<audio', '<video', '<set\\b', '<animate',
+  '<!entity', '<!doctype[^>]*\\[', '<\\?xml-stylesheet', '@import', 'javascript:', 'data:text', '&#',
+  '[\\s/"\']on[a-z]+\\s*=', 'url\\(\\s*["\']?(?:https?:|//)', '(?:xlink:)?href\\s*=\\s*(?!["\']?\\s*#)',
+].join('|'), 'i')
 
 /** kind: 'font' | 'logo' | 'favicon'. Returns { ok: true, ext } or { ok: false, error: <i18n key> }. */
 export function checkFile(kind, { name, size, bytes }) {

@@ -19,7 +19,8 @@ const showTitle = computed(() => !logoSrc.value || site.branding.showTitle)
       </button>
       <router-link :to="home" class="flex shrink-0 items-center gap-2.5 rounded font-semibold text-fg" :aria-label="showTitle ? undefined : info.siteTitle">
         <img v-if="logoSrc" :src="logoSrc" alt="" class="h-7 w-auto max-w-[10rem] object-contain" />
-        <img src="/512x512.png" alt="Docs-Ready Logo" class="h-7 w-auto max-w-[10rem] object-contain"/>
+        <!-- Neutral default mark. Your own logo comes from branding.logo in docs.config.js, so generated projects never ship someone else's brand. -->
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="var(--color-accent)" /><path d="M8 7h8M8 12h8M8 17h5" stroke="var(--color-on-accent)" stroke-width="2" stroke-linecap="round" /></svg>
         <span v-if="showTitle" class="hidden sm:inline">{{ info.siteTitle }}</span>
       </router-link>
       <div class="flex flex-1 justify-center">

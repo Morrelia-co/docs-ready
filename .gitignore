@@ -1,2 +1,12 @@
 /dist
 /node_modules
+.env
+.env.*
+!.env.example
+*.local
+.vercel
+.DS_Store
+npm-debug.log*
+*.log
+.idea/
+.vscode/

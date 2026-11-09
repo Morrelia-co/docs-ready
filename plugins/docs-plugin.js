@@ -15,6 +15,11 @@ import config from '../docs.config.js'
 
 const DEF = config.defaultLanguage
 
+// gray-matter runs "---js" / "---javascript" frontmatter through eval(), which would let any Markdown file execute code in the
+// build (CI, Vercel previews). Only YAML frontmatter is allowed; anything else fails the build with a clear message.
+const noCode = { parse() { throw new Error('Only YAML frontmatter is allowed. JavaScript/CoffeeScript frontmatter is disabled for security.') } }
+const MATTER = { engines: { js: noCode, javascript: noCode, coffee: noCode, coffeescript: noCode } }
+
 const MANIFEST = 'virtual:docs-manifest'
 const DOC = 'virtual:doc/'
 const THEME = 'github-dark-default'
@@ -147,7 +152,7 @@ async function buildAll(root, warn) {
     const prefix = code === DEF ? '' : code + '/'
     for (const file of files.sort()) {
       const rel = path.relative(base, file).split(path.sep).join('/')
-      const { data, content } = matter(await readFile(file, 'utf8'))
+      const { data, content } = matter(await readFile(file, 'utf8'), MATTER)
       if (data.published === false) continue // drafts never reach the manifest, the bundle or the search index
       const pagePath = rel.replace(/\.md$/, '') // identical across languages: this is how translations are matched
       const slug = prefix + pagePath
